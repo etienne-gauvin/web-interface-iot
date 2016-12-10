@@ -2,10 +2,14 @@
  * Web Interface IoT Client
  */
 
-(function () {
+(() => {
 	
-	var socket = io();
+	var socket = io()
 	
+	socket.on('data', (data) => {
+		
+	    console.info('Data update !', data)
 	
+	})
 	
-})();
+})()
