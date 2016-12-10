@@ -1,13 +1,13 @@
-const express = require('express')
-const http = require('http')
-const socketIO = require('socket.io')
-const path = require('path')
+var express = require('express')
+var http = require('http')
+var socketIO = require('socket.io')
+var path = require('path')
 
 // Routes
-const index = require('./routes/index')
+var index = require('./routes/index')
 
 // App
-const app = express()
+var app = express()
 app.set('port', 3000)
 
 // View engine setup
@@ -21,7 +21,7 @@ app.use(express.static(path.join(__dirname, 'public')))
 app.use('/', index)
 
 // Starting server
-const httpServer = http.Server(app)
+var httpServer = http.Server(app)
 
 httpServer.listen(3000, function() {
 	
@@ -30,7 +30,7 @@ httpServer.listen(3000, function() {
 })
 
 // socket.io handler
-const io = socketIO(httpServer)
+var io = socketIO(httpServer)
 io.on('connection', function(socket) {
 	
 	console.log('a user connected')
