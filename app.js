@@ -1,13 +1,14 @@
-var express = require('express')
-var http = require('http')
-var socketIO = require('socket.io')
-var path = require('path')
+const express = require('express')
+const http = require('http')
+const socketIO = require('socket.io')
+const path = require('path')
+const mysql = require('mysql')
 
 // Routes
-var index = require('./routes/index')
+const index = require('./routes/index')
 
 // App
-var app = express()
+const app = express()
 app.set('port', 3000)
 
 // View engine setup
@@ -21,7 +22,7 @@ app.use(express.static(path.join(__dirname, 'public')))
 app.use('/', index)
 
 // Starting server
-var httpServer = http.Server(app)
+const httpServer = http.Server(app)
 
 httpServer.listen(3000, function() {
 	
@@ -30,14 +31,14 @@ httpServer.listen(3000, function() {
 })
 
 // socket.io handler
-var io = socketIO(httpServer)
+const io = socketIO(httpServer)
 io.on('connection', function(socket) {
 	
 	console.log('a user connected')
 
 	socket.on('disconnect', function() {
 		
-	  	console.log('user disconnected')
+  	console.log('user disconnected')
 	  	
 	})
 })
