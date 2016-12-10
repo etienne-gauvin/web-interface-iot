@@ -1,41 +1,45 @@
-var express = require('express');
-var path = require('path');
-var logger = require('morgan');
-var cookieParser = require('cookie-parser');
-var bodyParser = require('body-parser');
+const express = require('express')
+const http = require('http')
+const socketIO = require('socket.io')
+const path = require('path')
 
-var index = require('./routes/index');
+// Routes
+const index = require('./routes/index')
 
-var app = express();
+// App
+const app = express()
+app.set('port', 3000)
 
-// view engine setup
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'hbs');
+// View engine setup
+app.set('views', path.join(__dirname, 'views'))
+app.set('view engine', 'hbs')
 
-app.use(logger('dev'));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
+// Static files
+app.use(express.static(path.join(__dirname, 'public')))
 
-app.use('/', index);
+// Main page
+app.use('/', index)
 
-// catch 404 and forward to error handler
-app.use(function(req, res, next) {
-  var err = new Error('Not Found');
-  err.status = 404;
-  next(err);
-});
+// Starting server
+const httpServer = http.Server(app)
 
-// error handler
-app.use(function(err, req, res, next) {
-  // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
+httpServer.listen(3000, function() {
+	
+  	console.log('listening on *:3000')
+  	
+})
 
-  // render the error page
-  res.status(err.status || 500);
-  res.render('error');
-});
+// socket.io handler
+const io = socketIO(httpServer)
+io.on('connection', function(socket) {
+	
+	console.log('a user connected')
 
-module.exports = app;
+	socket.on('disconnect', function() {
+		
+	  	console.log('user disconnected')
+	  	
+	})
+})
+
+module.exports = app
