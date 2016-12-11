@@ -51,7 +51,7 @@ io.on('connection', function (socket) {
     const sql = `
         SELECT *
         FROM data
-        WHERE tdate > DATE_ADD(CURRENT_TIMESTAMP, INTERVAL '-1' DAY)
+        WHERE tdate > DATE_ADD(CURRENT_TIMESTAMP, INTERVAL '-1' HOUR)
     `
     
     db.query(sql, (err, rows, fields) => {
