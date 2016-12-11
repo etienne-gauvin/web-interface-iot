@@ -6,33 +6,62 @@
 
 (() => {
 	
-	const canvas = document.getElementById('chart')
-	const ctx = canvas.getContext('2d')
+	const tcanvas = document.getElementById('tchart')
+	const tctx = tcanvas.getContext('2d')
+	
+	const pcanvas = document.getElementById('pchart')
+	const pctx = pcanvas.getContext('2d')
+	
+	const acanvas = document.getElementById('achart')
+	const actx = acanvas.getContext('2d')
 	
 	const dataReceived = {}
-	const yAxis = []
 	const xAxis = []
+	const tyAxis = []
+	const pyAxis = []
+	const ayAxis = []
 	
-	const chart = new Chart(ctx, {
+	const tchart = new Chart(tctx, {
 	    type: 'line',
 	    data: {
 	        labels: xAxis,
 	        datasets: [{
 	            label: "Temperature (°C)",
-	            data: yAxis
+	            data: tyAxis
 	        }]
-	    },
-	    options: {
-	        responsive: true
+	    }
+	})
+	
+	const pchart = new Chart(pctx, {
+	    type: 'line',
+	    data: {
+	        labels: xAxis,
+	        datasets: [{
+	            label: "Pressure (hPa)",
+	            data: pyAxis
+	        }]
+	    }
+	})
+	
+	const achart = new Chart(actx, {
+	    type: 'line',
+	    data: {
+	        labels: xAxis,
+	        datasets: [{
+	            label: "Altitude (m)",
+	            data: ayAxis
+	        }]
 	    }
 	})
 	
 	function addData(data) {
 		
 		const date = new Date(data.tdate)
-		
-	    yAxis.push(data.temp)
 	    xAxis.push(`${date.getHours()}h${date.getMinutes()}`)
+		
+	    tyAxis.push(data.temp)
+	    pyAxis.push(data.press)
+	    ayAxis.push(data.alt)
 		
 	}
 	
@@ -43,7 +72,9 @@
 	    console.info('Data !', newData)
     	
     	// Empty the arrays
-    	yAxis.splice(0, yAxis.length)
+    	tyAxis.splice(0, tyAxis.length)
+    	pyAxis.splice(0, pyAxis.length)
+    	ayAxis.splice(0, ayAxis.length)
     	xAxis.splice(0, xAxis.length)
 	    
 	    for (let nd in newData) {
@@ -56,7 +87,9 @@
 		    
 	    }
 	    
-	    chart.update()
+	    tchart.update()
+	    pchart.update()
+	    achart.update()
 	
 	})
 	
@@ -69,7 +102,13 @@
 		    
 		    addData(data)
 	    	
-	    	chart.update()
+	    	tchart.update()
+	    	pchart.update()
+	    	achart.update()
+	    	
+	    	document.querySelector('.temperature output').innerHTML = (data.temp || '--') + " °C"
+	    	document.querySelector('.pressure output').innerHTML = (data.press || '--') + " hPa"
+	    	document.querySelector('.altitude output').innerHTML = (data.alt || '--') + " m"
 		    
 		    dataReceived[data.tdate] = data
 		    

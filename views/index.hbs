@@ -1,6 +1,25 @@
 <h1>Web Interface IoT</h1>
 
-<canvas id="chart" width="900" height="400"></canvas>
+<section class='live-values'>
+	<div class='temperature'>
+		<label>Temperature</label>
+		<output>-- °C</output>
+	</div>
+	
+	<div class='pressure'>
+		<label>Pressure</label>
+		<output>-- hPa</output>
+	</div>
+	
+	<div class='altitude'>
+		<label>Altitude</label>
+		<output>-- m</output>
+	</div>
+</section>
+
+<canvas id="tchart" width="800" height="200"></canvas>
+<canvas id="pchart" width="800" height="200"></canvas>
+<canvas id="achart" width="800" height="200"></canvas>
 
 <script src="/javascripts/chart.js"></script>
 <script src="/javascripts/socket.io.min.js"></script>
