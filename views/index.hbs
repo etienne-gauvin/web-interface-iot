@@ -1,7 +1,28 @@
-<h1>Web Interface IoT</h1>
+<h1>Weather station IoT</h1>
 
-<canvas id="chart" width="900" height="400"></canvas>
+<section class='live-values'>
+	<div class='temperature'>
+		<label>temperature</label>
+		<output>-- °C</output>
+	</div>
+	
+	<div class='pressure'>
+		<label>pressure</label>
+		<output>-- hPa</output>
+	</div>
+	
+	<div class='altitude'>
+		<label>altitude</label>
+		<output>-- m</output>
+	</div>
+</section>
 
-<script src="/javascripts/chart.js"></script>
-<script src="/javascripts/socket.io.min.js"></script>
-<script src="/javascripts/client.js"></script>
+<section class='charts'>
+</section>
+
+<div id='period' style='display:none'>{{period}}</div>
+<div id='interval' style='display:none'>{{interval}}</div>
+
+<script src='/javascripts/chart.js'></script>
+<script src='/javascripts/socket.io.min.js'></script>
+<script src='/javascripts/client.js'></script>

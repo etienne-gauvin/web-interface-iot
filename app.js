@@ -11,9 +11,6 @@ const config = require('./config')
 const db = mysql.createConnection(config.mysql)
 db.connect()
 
-// Routes
-const index = require('./routes/index')
-
 // Data
 var data = {}
 
@@ -29,12 +26,19 @@ app.set('view engine', 'hbs')
 app.use(express.static(path.join(__dirname, 'public')))
 
 // Main page
-app.use('/', index)
+app.use('/', (req, res, next) => {
+    
+    res.render('index', {
+        interval: config.interval,
+        period: config.period
+    })
+    
+})
 
 // Starting server
 const httpServer = http.Server(app)
 
-httpServer.listen(3000, function() {
+httpServer.listen(3000, () => {
     
     console.info('listening on *:3000')
         
@@ -42,7 +46,7 @@ httpServer.listen(3000, function() {
 
 // socket.io handler
 const io = socketIO(httpServer)
-io.on('connection', function (socket) {
+io.on('connection', (socket) => {
     
     console.info('a client connected', socket.id)
     
@@ -51,13 +55,13 @@ io.on('connection', function (socket) {
     const sql = `
         SELECT *
         FROM data
-        WHERE tdate > DATE_ADD(CURRENT_TIMESTAMP, INTERVAL '-1' DAY)
+        WHERE tdate > DATE_ADD(CURRENT_TIMESTAMP, INTERVAL '-${config.period}' SECOND)
     `
     
     db.query(sql, (err, rows, fields) => {
         
         console.info(`sending ${rows.length} entries to new client`)
-        socket.emit('data', rows)
+        socket.emit('all data', rows)
         
     })
     

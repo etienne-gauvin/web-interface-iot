@@ -6,3 +6,21 @@ body {
 a {
   color: #00B7FF;
 }
+
+canvas {
+	display: block;
+}
+
+.live-values {
+	display: flex;
+}
+
+.live-values > * {
+	flex-grow: 1;
+	text-align: center;
+}
+
+output {
+	display: block;
+	font-size: 10vmin;
+}
