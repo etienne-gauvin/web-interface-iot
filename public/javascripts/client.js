@@ -27,6 +27,15 @@
 	    }
 	})
 	
+	function addData(data) {
+		
+		const date = new Date(data.tdate)
+		
+	    yAxis.push(data.temp)
+	    xAxis.push(`${date.getHours()}h${date.getMinutes()}`)
+		
+	}
+	
 	const socket = io()
 	
 	socket.on('data', (newData) => {
@@ -41,8 +50,7 @@
 	    	
 	    	const data = newData[nd]
 	    	
-		    yAxis.push(data.temp)
-		    xAxis.push(data.tdate)
+		    addData(data)
 		    
 		    dataReceived[data.tdate] = data
 		    
@@ -59,8 +67,7 @@
     		
 	    	console.info('Live data !', data)
 		    
-		    yAxis.push(data.temp)
-		    xAxis.push(data.tdate)
+		    addData(data)
 	    	
 	    	chart.update()
 		    
