@@ -151,6 +151,12 @@
 			
 			this.addData(data)
 			
+			for (let value of VALUES) {
+    			
+		   		this.axes[value.name].splice(0, 1)
+		   		
+    		}
+			
     		this.updateCharts()
 	   		
 		}
