@@ -9,16 +9,17 @@
 	const canvas = document.getElementById('chart')
 	const ctx = canvas.getContext('2d')
 	
-	const allData = []
-	const allLabels = []
+	const dataReceived = {}
+	const yAxis = []
+	const xAxis = []
 	
 	const chart = new Chart(ctx, {
 	    type: 'line',
 	    data: {
-	        labels: allLabels,
+	        labels: xAxis,
 	        datasets: [{
 	            label: "Temperature (°C)",
-	            data: allData
+	            data: yAxis
 	        }]
 	    },
 	    options: {
@@ -30,21 +31,49 @@
 	
 	socket.on('data', (newData) => {
 		
-	    console.info('Data update !', newData)
+	    console.info('Data !', newData)
     	
     	// Empty the arrays
-    	allData.splice(0, allData.length)
-    	allLabels.splice(0, allLabels.length)
+    	yAxis.splice(0, yAxis.length)
+    	xAxis.splice(0, xAxis.length)
 	    
 	    for (let nd in newData) {
 	    	
-		    allData.push(newData[nd].temp)
-		    allLabels.push(newData[nd].tdate)
+	    	const data = newData[nd]
+	    	
+		    yAxis.push(data.temp)
+		    xAxis.push(data.tdate)
+		    
+		    dataReceived[data.tdate] = data
 		    
 	    }
 	    
 	    chart.update()
 	
+	})
+	
+	socket.on('live data', (data) => {
+		
+    	
+    	if (dataReceived[data.tdate] === undefined) {
+    		
+	    	console.info('Live data !', data)
+		    
+		    yAxis.push(data.temp)
+		    xAxis.push(data.tdate)
+	    	
+	    	chart.update()
+		    
+		    dataReceived[data.tdate] = data
+		    
+    	}
+    	
+    	else {
+    		
+	    	console.warn('Live data already received.', data)
+    		
+    	}
+	    
 	})
 	
 })()

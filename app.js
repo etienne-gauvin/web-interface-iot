@@ -1,3 +1,5 @@
+"use strict";
+
 const express = require('express')
 const http = require('http')
 const socketIO = require('socket.io')
@@ -44,7 +46,20 @@ io.on('connection', function (socket) {
     
     console.info('a client connected', socket.id)
     
-    socket.emit('data', data)
+    // Get data for the last day
+    // and send it to the new client
+    const sql = `
+        SELECT *
+        FROM data
+        WHERE tdate > DATE_ADD(CURRENT_TIMESTAMP, INTERVAL '-1' DAY)
+    `
+    
+    db.query(sql, (err, rows, fields) => {
+        
+        console.info(`sending ${rows.length} entries to new client`)
+        socket.emit('data', rows)
+        
+    })
     
     socket.on('disconnect', function () {
         
@@ -53,8 +68,10 @@ io.on('connection', function (socket) {
     })
 })
 
-// Main loop
 var previousRowCount = 0
+
+// Main loop
+const dataSendedLive = {}
 
 setInterval(() => {
     
@@ -71,17 +88,52 @@ setInterval(() => {
             // New row count
             const rowCount = (rows !== null && rows[0] !== null && rows[0].count !== null) ? rows[0].count : 0
             
-            // If there is new value(s) in the list
+            // If there are new value(s) in the list
             if (rowCount > previousRowCount) {
-                
-                console.log("data update")
                 
                 previousRowCount = rowCount
                 
-                db.query('SELECT * FROM data', (err, rows, fields) => {
+                // Get data for the last X minutes
+                const sql = `
+                    SELECT *
+                    FROM data
+                    WHERE tdate > DATE_ADD(CURRENT_TIMESTAMP, INTERVAL '-30' MINUTE)
+                `
+                
+                db.query(sql, (err, rows, fields) => {
+                                
+                    if (err) {
+                        
+                        console.error(err)
+                        
+                    }
                     
-                    data = rows
-                    io.emit('data', rows)
+                    else {
+                        
+                        // For each row of the last X minutes
+                        for (let i = 0; i < rows.length; i++) {
+                            
+                            
+                            if (rows[i]) {
+                                
+                                let data = rows[i]
+                                
+                                // If the row hasn't been sent to clients yet
+                                if (dataSendedLive[data.tdate] === undefined) {
+                                    
+                                    // Send it
+                                    io.emit('live data', data)
+                                    dataSendedLive[data.tdate] = data
+                                    
+                                    console.info(`sending live data to all clients (${data.tdate})`)
+                                    
+                                }
+                                
+                            }
+                            
+                        }
+                        
+                    }
                     
                 })
                 
@@ -91,7 +143,7 @@ setInterval(() => {
         
     })
     
-}, config.interval || 300)
+}, 1000)
 
 
 module.exports = app
